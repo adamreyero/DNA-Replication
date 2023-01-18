@@ -1,0 +1,1209 @@
+<html>
+<head>
+	<style>
+	*{padding: 0; margin:0;}
+	canvas{ background: #525252; display: block; margin: 0 auto;}
+	</style>
+</head>
+<body>
+<canvas id= "myCanvas" width="800" height="600"></canvas>
+<script type="text/javascript">
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+
+{ //setup stuff
+var W = 800, H = 600;
+var mouseX;
+var mouseY;
+var mouseIsDown = 0;
+var wPressed = false;
+var aPressed = false;
+var sPressed = false;
+var dPressed = false;
+var escPressed = false;
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+document.addEventListener("mousemove", mouseMoveHandler, false);
+canvas.addEventListener("mousedown", getPosition, false);
+canvas.addEventListener("mouseup", getPosition2, false);
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+function mouseMoveHandler(e) {
+    mouseX = e.clientX - canvas.offsetLeft;
+    mouseY = e.clientY - canvas.offsetTop;
+}
+function getPosition2(event){
+	mouseIsDown = 0;
+}
+function getPosition(event)
+{
+	if(mouseIsDown != 2)
+	{
+		mouseIsDown = 1;
+	}
+}
+function keyDownHandler(e)
+{
+	if(e.keyCode == 87)
+	{
+		wPressed = true;
+	}
+	if(e.keyCode == 65)
+	{
+		aPressed = true;
+	}
+	if(e.keyCode == 83)
+	{
+		sPressed = true;
+	}
+	if(e.keyCode == 68)
+	{
+		dPressed = true;
+	}
+	if(e.keyCode == 27)
+	{
+		escPressed = true;
+	}
+}
+function keyUpHandler(e)
+{
+	if(e.keyCode == 87)
+	{
+		wPressed = false;
+	}
+	if(e.keyCode == 65)
+	{
+		aPressed = false;
+	}
+	if(e.keyCode == 83)
+	{
+		sPressed = false;
+	}
+	if(e.keyCode == 68)
+	{
+		dPressed = false;
+	}
+	if(e.keyCode == 27)
+	{
+		escPressed = false;
+	}
+}
+}
+
+{ //kritikal functions
+
+function Btn(x,y,w,h,hover,pressed,color,hoverColor,text,textColor,textHoverColor,font)
+{
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	this.hover = hover;
+	this.pressed = pressed;
+	this.color = color;
+	this.hoverColor = hoverColor;
+	this.text = text;
+	this.textColor = textColor;
+	this.textHoverColor = textHoverColor;
+	this.font = font;
+}
+
+var btns = [];
+
+//btns.push(new Btn(0,0,120,80,false,false,"red","white","cool","white","red","60px Arial"));
+
+function drawBtns()
+{
+	for(var a=0; a<btns.length; a++)
+	{
+		if(pointRect(mouseX,mouseY,btns[a].x,btns[a].y,btns[a].w,btns[a].h))
+		{
+			btns[a].hover = true;
+			ctx.fillStyle = btns[a].hoverColor;
+			ctx.fillRect(btns[a].x,btns[a].y,btns[a].w,btns[a].h);
+			ctx.fillStyle = btns[a].textHoverColor;
+			ctx.font = btns[a].font;
+			ctx.fillText(btns[a].text,btns[a].x,btns[a].y+btns[a].h-20);
+			if(mouseIsDown)
+			{
+				btns[a].pressed = true;
+			}
+		}
+		else
+		{
+			ctx.fillStyle = btns[a].color;
+			ctx.fillRect(btns[a].x,btns[a].y,btns[a].w,btns[a].h);
+			ctx.fillStyle = btns[a].textColor;
+			ctx.font = btns[a].font;
+			ctx.fillText(btns[a].text,btns[a].x,btns[a].y+btns[a].h-20);
+		}
+	}
+}
+
+function pointRect(px,py,x,y,w,h)
+{
+	if(px >= x && px <= x + w &&
+	py >= y && py <= y + h)
+	{
+		return true;
+	}
+	return false;
+}
+
+function pointCirc(px,py,x,y,r)
+{
+	if(Math.sqrt(Math.pow(Math.abs(px-x),2)+Math.pow(Math.abs(py-y),2))<=r)
+	{
+		return true;
+	}
+	return false;
+}
+
+function rectRect(x1,y1,w1,h1,x2,y2,w2,h2)
+{
+	if(x1+w1 >= x2 && x1 <= x2+w2 &&
+	y1+h1 >= y2 && y1 <= y2+h2)
+	{
+		return true;
+	}
+	return false;
+}
+
+function distance(x1,y1,x2,y2)
+{
+	return(Math.sqrt(Math.pow(Math.abs(x1-x2),2)+Math.pow(Math.abs(y1-y2),2)))
+}
+
+function pointLine(x1,y1,x2,y2,x3,y3)
+{
+	let dist1 = distance(x1,y1,x3,y3);
+	let dist2 = distance(x2,y2,x3,y3);
+	let lineLength = distance(x1,y1,x2,y2);
+	if(dist1 + dist2 <= lineLength + 0.1)
+	{
+		return true;
+	}
+	return false;
+}
+
+function circCirc(x1,y1,r1,x2,y2,r2)
+{
+	if(distance(x1,y1,x2,y2)<=r1+r2)
+	{
+		return true;
+	}
+	return false;
+}
+
+function lineLine(x1,y1,x2,y2, x3,y3,x4,y4)
+{
+	var uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+	var uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+	if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1)
+	{
+		var intersectionX = x1 + (uA * (x2-x1));
+		var intersectionY = y1 + (uA * (y2-y1));
+		return [intersectionX,intersectionY];
+	}
+	return false;
+}
+
+function linePoint(x1,y1,x2,y2, px,py) {
+
+  let d1 = distance(px,py, x1,y1);
+  let d2 = distance(px,py, x2,y2);
+  let lineLen = distance(x1,y1, x2,y2);
+  let buffer = 0.1;
+  if (d1+d2 >= lineLen-buffer && d1+d2 <= lineLen+buffer) {
+    return true;
+  }
+  return false;
+}
+
+function lineCirc(x1,y1,x2,y2,cx,cy,r) {
+
+  let len = distance(x1,y1,x2,y2);
+  let dot = ( ((cx-x1)*(x2-x1)) + ((cy-y1)*(y2-y1)) ) / Math.pow(len,2);
+  let closestX = x1 + (dot * (x2-x1));
+  let closestY = y1 + (dot * (y2-y1));
+  let inside1 = pointCirc(x1,y1,cx,cy,r);
+  let inside2 = pointCirc(x2,y2,cx,cy,r);
+  let dist = distance(closestX,closestY,cx,cy);
+  let onSegment = linePoint(x1,y1,x2,y2, closestX,closestY);
+  if (!onSegment)
+  {
+	return false;
+  }
+
+  if (dist <= r) {
+    return [closestX,closestY];
+  }
+  if (inside1)
+  {  
+	return [x1,y1];
+  }
+  else if(inside2)
+  {
+	return [x2,y2];
+  }
+  return false;
+}
+
+}
+
+let aU = new Image();
+aU.src = "aUpper.png";
+let aL = new Image();
+aL.src = "aLower.png";
+let tU = new Image();
+tU.src = "tUpper.png";
+let tL = new Image();
+tL.src = "tLower.png";
+let cU = new Image();
+cU.src = "cUpper.png";
+let cL = new Image();
+cL.src = "cLower.png";
+let gU = new Image();
+gU.src = "gUpper.png";
+let gL = new Image();
+gL.src = "gLower.png";
+let backBone = new Image();
+backBone.src = "backBone.png";
+let primer = new Image();
+primer.src = "primer.png";
+let poly = new Image();
+poly.src = "polymeraseIII.png";
+let polyU = new Image();
+polyU.src = "polymeraseIIIU.png";
+let polyL = new Image();
+polyL.src = "polymeraseIIIL.png";
+let bckgrnd = new Image();
+bckgrnd.src = "GradientBackground.jpg";
+let bubble = new Image();
+bubble.src = "bubble.png";
+let bubbleN = new Image();
+bubbleN.src = "bubbleN.png";
+let bubbleP = new Image();
+bubbleP.src = "bubbleP.png";
+let bubbleH = new Image();
+bubbleH.src = "bubbleH.png";
+let bubbleB = new Image();
+bubbleB.src = "bubbleB.png";
+let dialogueBox = new Image();
+dialogueBox.src = "dialogueBox.png";
+let five = new Image();
+five.src = "5'.png";
+let three = new Image();
+three.src = "3'.png";
+let bonds = new Image();
+bonds.src = "bonds.png";
+let bonds2 = new Image();
+bonds2.src = "bonds2.png";
+
+
+let leadingStrand = new Array(100);
+for(let i = 0; i < leadingStrand.length; i++){
+	leadingStrand[i] = new Array(2);
+	let r = Math.floor(Math.random()*4);
+	let base;
+	switch(r){
+		case 0:
+			base = "a";
+			break;
+		case 1:
+			base = "t";
+			break;
+		case 2:
+			base = "c";
+			break;
+		case 3:
+			base = "g";
+			break;
+	}
+	leadingStrand[i][0] = base;
+	leadingStrand[i][1] = 0;
+}
+let xOffset = 0;
+let baseHeight = 100;
+let baseWidth = 40;
+let hotStartOffset = 900;
+let space = 100 + baseWidth;
+let currentBaseIndex = 0;
+let isHolding = false;
+let holding;
+let speed = 1;
+
+let polymeraseX = hotStartOffset + (space * 2) - xOffset-110;
+
+function drawLeadingStrand()
+{
+	//draws polymerase
+	if((hotStartOffset + (space * currentBaseIndex) - xOffset)-110 > polymeraseX)
+	{
+		polymeraseX+=speed*4;
+	}
+	ctx.drawImage(poly,polymeraseX,105,255,300);
+	//draws the strand
+	ctx.drawImage(three,20,60,40,40);
+	ctx.drawImage(five,740,60,40,40);
+	
+	ctx.drawImage(five,20,420,40,40);
+	ctx.drawImage(three,740,420,40,40);
+	ctx.drawImage(backBone,0,120,W,30);
+	for(let i = 0; i < leadingStrand.length; i++)
+	{
+		let base = leadingStrand[i][0];
+		switch(base){
+			case "a":
+				ctx.drawImage(aU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+20);
+				break;
+			case "t":
+				ctx.drawImage(tU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+20);
+				break;
+			case "c":
+				ctx.drawImage(cU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+15);
+				break;
+			case "g":
+				ctx.drawImage(gU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+15);
+				break;
+		}
+		
+		if(leadingStrand[i][1] != 0)
+		{
+			let base = leadingStrand[i][1];
+			switch(base){
+				case "a":
+					ctx.drawImage(aL,hotStartOffset + (space * i) - xOffset,245,baseWidth,baseHeight+20);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "t":
+					ctx.drawImage(tL,hotStartOffset + (space * i) - xOffset,245,baseWidth,baseHeight+20);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "c":
+					ctx.drawImage(cL,hotStartOffset + (space * i) - xOffset,250,baseWidth,baseHeight+15);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "g":
+					ctx.drawImage(gL,hotStartOffset + (space * i) - xOffset,250,baseWidth,baseHeight+15);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "p":
+					if(leadingStrand[i+1][1]=="p")
+					{
+						ctx.drawImage(primer,hotStartOffset + (space * i) - xOffset,250,180,115);
+					}
+					break;
+			}
+		}
+	}
+	ctx.drawImage(polyU,polymeraseX,105,255,60);
+	ctx.drawImage(polyL,polymeraseX,355,255,55);
+	
+	//hotbar
+	{
+	ctx.drawImage(primer,20,475,180,115);
+	
+	ctx.drawImage(aL,240,470,baseWidth,120);
+	ctx.drawImage(tL,330,470,baseWidth,120);
+	ctx.drawImage(cL,420,475,baseWidth,115);
+	ctx.drawImage(gL,490,475,baseWidth,115);
+	
+	if(pointRect(mouseX,mouseY,20,475,180,115) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "p";
+	}
+	
+	if(pointRect(mouseX,mouseY,240,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "a";
+	}
+	if(pointRect(mouseX,mouseY,330,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "t";
+	}
+	if(pointRect(mouseX,mouseY,420,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "c";
+	}
+	if(pointRect(mouseX,mouseY,490,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "g";
+	}
+	}
+	//holding/dragging
+	{
+	if(isHolding)
+	{
+		if(!mouseIsDown)
+		{
+			isHolding = false;
+			if(currentBaseIndex == 0){
+				if(holding == "p" && rectRect(hotStartOffset + (space * currentBaseIndex) - xOffset,150+baseHeight,baseWidth,baseHeight,mouseX-(180/2),mouseY-(115/2),180,115))
+				{
+					leadingStrand[currentBaseIndex][1]="p";
+					leadingStrand[currentBaseIndex+1][1]="p";
+					currentBaseIndex = 2;
+				}
+			}
+			else if(rectRect(hotStartOffset + (space * currentBaseIndex) - xOffset,150+baseHeight,baseWidth,baseHeight,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,baseHeight)){
+				if(leadingStrand[currentBaseIndex][0] == "a" && holding == "t"){
+					leadingStrand[currentBaseIndex][1] = "t";
+					currentBaseIndex++;
+				}
+				else if(leadingStrand[currentBaseIndex][0] == "t" && holding == "a"){
+					leadingStrand[currentBaseIndex][1] = "a";
+					currentBaseIndex++;
+				}
+				else if(leadingStrand[currentBaseIndex][0] == "c" && holding == "g"){
+					leadingStrand[currentBaseIndex][1] = "g";
+					currentBaseIndex++;
+				}
+				else if(leadingStrand[currentBaseIndex][0] == "g" && holding == "c"){
+					leadingStrand[currentBaseIndex][1] = "c";
+					currentBaseIndex++;
+				}
+			}
+		}
+		switch(holding){
+			case "a":
+				ctx.drawImage(aL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,120);
+				break;
+			case "t":
+				ctx.drawImage(tL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,120);
+				break;
+			case "c":
+				ctx.drawImage(cL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,115);
+				break;
+			case "g":
+				ctx.drawImage(gL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,115);
+				break;
+			case "p":
+				ctx.drawImage(primer,mouseX-(180/2),mouseY-(115/2),180,115);
+				break;
+		}
+		//ctx.fillRect(mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,baseHeight);
+	}
+	}
+	//speeding up
+	{
+	if(hotStartOffset + (space * currentBaseIndex) - xOffset+baseWidth < 0)
+	{
+		ctx.drawImage(dialogueBox,0,450,W,150);
+		speed = 0;
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Click to retry",30,490);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			gameMode = "lead";
+			leadingStrand = new Array(26);
+			for(let i = 0; i < leadingStrand.length; i++){
+				leadingStrand[i] = new Array(2);
+				let r = Math.floor(Math.random()*4);
+				let base;
+				switch(r){
+					case 0:
+						base = "a";
+						break;
+					case 1:
+						base = "t";
+						break;
+					case 2:
+						base = "c";
+						break;
+					case 3:
+						base = "g";
+						break;
+			}
+			leadingStrand[i][0] = base;
+			leadingStrand[i][1] = 0;
+			}
+			xOffset = 0;
+			baseHeight = 100;
+			baseWidth = 40;
+			hotStartOffset = 300;
+			space = 100 + baseWidth;
+			currentBaseIndex = -1;
+			isHolding = false;
+			holding;
+			speed = 1;
+			polymeraseX = hotStartOffset + (space * 2) - xOffset-110;
+		}
+	}
+	else if(currentBaseIndex == -1)
+	{
+		ctx.drawImage(dialogueBox,0,450,W,150);
+		speed = 0;
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("The parental strand runs from 3' to 5'. Polymerase III can",30,490);
+		ctx.fillText("only build in the 5' to 3' direction.",30,512);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			currentBaseIndex++;
+		}
+	}
+	else if(currentBaseIndex == 0)
+	{
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		speed = 0;
+		dialogue = " Primase, to place a RNA primer. Drag the primer onto the strand";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("To start replicating, DNA Polymerase III needs to build",30,40);
+		ctx.fillText("off of an RNA primer placed by the enzyme Primase. Drag",30,62);
+		ctx.fillText("a primer to the left of Polymerase III.",30,82);
+	}
+	else if(currentBaseIndex == 2)
+	{
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		speed = 0;
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("The bases follow the rule of base pairing. Each Adenine",30,40);
+		ctx.fillText("(A) pairs with a Thymine(T) and Cytosine(C) pairs with",30,62);
+		ctx.fillText("Guanine(G). Drag the appropriate nucleotide onto the",30,82);
+		ctx.fillText("strand.",30,102);
+	}
+	else if(currentBaseIndex <= 10)
+	{
+		speed = 1;
+	}
+	else if(currentBaseIndex <= 20)
+	{
+		speed = 1.5;
+	}
+	else if(currentBaseIndex <= 25)
+	{
+		speed=2;
+	}
+	else
+	{
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		speed = 0;
+		dialogue = "win";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText(dialogue,30,40);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			gameMode = "lag";
+			laggingStrand = new Array(30);
+			for(let i = 0; i < laggingStrand.length; i++){
+				laggingStrand[i] = new Array(2);
+				let r = Math.floor(Math.random()*4);
+				let base;
+				switch(r){
+					case 0:
+						base = "a";
+						break;
+					case 1:
+						base = "t";
+						break;
+					case 2:
+						base = "c";
+						break;
+					case 3:
+						base = "g";
+						break;
+				}
+				laggingStrand[i][0] = base;
+				laggingStrand[i][1] = 0;
+			}
+			xOffset = 0;
+			baseHeight = 100;
+			baseWidth = 40;
+			hotStartOffset = 200;
+			space = 100 + baseWidth;
+			currentBaseIndex = "intro";
+			isHolding = false;
+			holding;
+			speed = 1;
+			polymeraseX = hotStartOffset + (space * 2) - xOffset-110;
+		}
+	}
+	xOffset+=speed;
+	polymeraseX-=speed;
+	}
+}
+
+let laggingStrand = new Array(30);
+for(let i = 0; i < laggingStrand.length; i++){
+	laggingStrand[i] = new Array(2);
+	let r = Math.floor(Math.random()*4);
+	let base;
+	switch(r){
+		case 0:
+			base = "a";
+			break;
+		case 1:
+			base = "t";
+			break;
+		case 2:
+			base = "c";
+			break;
+		case 3:
+			base = "g";
+			break;
+	}
+	laggingStrand[i][0] = base;
+	laggingStrand[i][1] = 0;
+}
+
+let polyTarget = 2;
+
+function drawLaggingStrand()
+{
+	if(polymeraseX-xOffset - (hotStartOffset + (space * polyTarget) - xOffset-110) < speed*-10)
+	{
+		polymeraseX+=speed*10;
+	}
+	else if(polymeraseX-xOffset - (hotStartOffset + (space * polyTarget) - xOffset-110) > speed*5)
+	{
+		polymeraseX-=speed*5;
+	}
+	ctx.drawImage(poly,polymeraseX-xOffset,105,255,300);
+	ctx.drawImage(five,20,60,40,40);
+	ctx.drawImage(three,740,60,40,40);
+	
+	ctx.drawImage(three,20,420,40,40);
+	ctx.drawImage(five,740,420,40,40);
+	ctx.drawImage(backBone,0,120,W,30);
+	for(let i = 0; i < laggingStrand.length; i++)
+	{
+		let base = laggingStrand[i][0];
+		switch(base){
+			case "a":
+				ctx.drawImage(aU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+20);
+				break;
+			case "t":
+				ctx.drawImage(tU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+20);
+				break;
+			case "c":
+				ctx.drawImage(cU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+15);
+				break;
+			case "g":
+				ctx.drawImage(gU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+15);
+				break;
+		}
+		
+		if(laggingStrand[i][1] != 0)
+		{
+			let base = laggingStrand[i][1];
+			switch(base){
+				case "a":
+					ctx.drawImage(aL,hotStartOffset + (space * i) - xOffset,245,baseWidth,baseHeight+20);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "t":
+					ctx.drawImage(tL,hotStartOffset + (space * i) - xOffset,245,baseWidth,baseHeight+20);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "c":
+					ctx.drawImage(cL,hotStartOffset + (space * i) - xOffset,250,baseWidth,baseHeight+15);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "g":
+					ctx.drawImage(gL,hotStartOffset + (space * i) - xOffset,250,baseWidth,baseHeight+15);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "p":
+					if(i+1 < laggingStrand.length && laggingStrand[i+1][1]=="p")
+					{
+						ctx.drawImage(primer,hotStartOffset + (space * i) - xOffset,250,180,115);
+					}
+					break;
+			}
+		}
+	}
+	ctx.drawImage(polyU,polymeraseX-xOffset,105,255,60);
+	ctx.drawImage(polyL,polymeraseX-xOffset,355,255,55);
+	//hotbar
+	{
+	ctx.drawImage(primer,20,475,180,115);
+	
+	ctx.drawImage(aL,240,470,baseWidth,120);
+	ctx.drawImage(tL,330,470,baseWidth,120);
+	ctx.drawImage(cL,420,475,baseWidth,115);
+	ctx.drawImage(gL,490,475,baseWidth,115);
+	
+	if(pointRect(mouseX,mouseY,20,475,180,115) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "p";
+	}
+	
+	if(pointRect(mouseX,mouseY,240,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "a";
+	}
+	if(pointRect(mouseX,mouseY,330,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "t";
+	}
+	if(pointRect(mouseX,mouseY,420,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "c";
+	}
+	if(pointRect(mouseX,mouseY,490,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "g";
+	}
+	}
+	//holding/dragging
+	
+	//0,1,2,3,4,5,6,7,8,9,10,11,12,13,114,15,16,17,18,19,20
+	{
+	if(isHolding)
+	{
+		if(!mouseIsDown)
+		{
+			isHolding = false;
+			if((currentBaseIndex + 2) % 5 == 0){
+				if(holding == "p" && rectRect(hotStartOffset + (space * currentBaseIndex) - xOffset,150+baseHeight,baseWidth,baseHeight,mouseX-(180/2),mouseY-(115/2),180,115))
+				{
+					laggingStrand[currentBaseIndex][1]="p";
+					laggingStrand[currentBaseIndex+1][1]="p";
+					currentBaseIndex--;
+				}
+			}
+			else if(rectRect(hotStartOffset + (space * currentBaseIndex) - xOffset,150+baseHeight,baseWidth,baseHeight,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,baseHeight)){
+				if(laggingStrand[currentBaseIndex][0] == "a" && holding == "t"){
+					laggingStrand[currentBaseIndex][1] = "t";
+					currentBaseIndex--;
+					console.log("try t");
+					polyTarget = currentBaseIndex;
+				}
+				else if(laggingStrand[currentBaseIndex][0] == "t" && holding == "a"){
+					laggingStrand[currentBaseIndex][1] = "a";
+					currentBaseIndex--;
+					console.log("try a");
+					polyTarget = currentBaseIndex;
+				}
+				else if(laggingStrand[currentBaseIndex][0] == "c" && holding == "g"){
+					laggingStrand[currentBaseIndex][1] = "g";
+					currentBaseIndex--;
+					console.log("try g");
+					polyTarget = currentBaseIndex;
+				}
+				else if(laggingStrand[currentBaseIndex][0] == "g" && holding == "c"){
+					laggingStrand[currentBaseIndex][1] = "c";
+					currentBaseIndex--;
+					console.log("try c");
+					polyTarget = currentBaseIndex;
+				}
+			}
+		}
+		switch(holding){
+			case "a":
+				ctx.drawImage(aL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,120);
+				break;
+			case "t":
+				ctx.drawImage(tL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,120);
+				break;
+			case "c":
+				ctx.drawImage(cL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,115);
+				break;
+			case "g":
+				ctx.drawImage(gL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,115);
+				break;
+			case "p":
+				ctx.drawImage(primer,mouseX-(180/2),mouseY-(115/2),180,115);
+				break;
+		}
+		//ctx.fillRect(mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,baseHeight);
+	}
+	if((currentBaseIndex+1)%5==0)
+	{
+		currentBaseIndex+=9;
+		polyTarget = currentBaseIndex-1;
+	}
+	}
+	//speeding up
+	{
+	if(hotStartOffset + (space * currentBaseIndex) - xOffset+baseWidth < 0)
+	{
+		ctx.drawImage(dialogueBox,0,450,W,150);
+		speed = 0;
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Click to retry",30,490);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			gameMode = "lag";
+			laggingStrand = new Array(30);
+			for(let i = 0; i < laggingStrand.length; i++){
+				laggingStrand[i] = new Array(2);
+				let r = Math.floor(Math.random()*4);
+				let base;
+				switch(r){
+					case 0:
+						base = "a";
+						break;
+					case 1:
+						base = "t";
+						break;
+					case 2:
+						base = "c";
+						break;
+					case 3:
+						base = "g";
+						break;
+				}
+				laggingStrand[i][0] = base;
+				laggingStrand[i][1] = 0;
+			}
+			xOffset = 0;
+			baseHeight = 100;
+			baseWidth = 40;
+			hotStartOffset = 200;
+			space = 100 + baseWidth;
+			currentBaseIndex = "intro";
+			isHolding = false;
+			holding;
+			speed = 1;
+			polymeraseX = hotStartOffset + (space * 2) - xOffset-110;
+		}
+	}
+	else if(currentBaseIndex == "intro")
+	{
+		ctx.drawImage(dialogueBox,0,450,W,150);
+		speed = 0;
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("The parental strand goes from 5' to 3' and is known as",30,490);
+		ctx.fillText("the Lagging Strand. Because of this Polymerase III can only",30,512);
+		ctx.fillText("build in 5' to 3' it has to continually jump back.",30,534);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			currentBaseIndex = 3;
+		}
+	}
+	else if(currentBaseIndex == 3)
+	{
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		speed = 0;
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Every time Polymerase III jumps back it must start on a",30,40);
+		ctx.fillText("primer. Each segment that is synthesized is known as an",30,62);
+		ctx.fillText("Okazaki fragment. Start by dragging a primer to the right",30,84);
+		ctx.fillText("of the Polymerase III.",30,106);
+	}
+	else if(laggingStrand[25][1]!=0)
+	{
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		speed = 0;
+		dialogue = "win";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			gameMode = "menu";
+		}
+	}
+	else if(hotStartOffset + (space * (currentBaseIndex+1)) - xOffset > W)
+	{
+		speed=3;
+	}
+	else
+	{
+		speed=.5;
+	}
+	}
+	if(currentBaseIndex > 4)
+	{
+		xOffset+=speed;
+	}
+}
+
+let gameMode = "menu";
+let pulseDirection = 1;
+let nPulse = 0;
+let hPulse = 0;
+let pPulse = 0;
+let bPulse = 0;
+let dialogue = "";
+function menu()
+{
+	dialogue = "Hover over things to get more info";
+	ctx.drawImage(dialogueBox,0,0,W,150);
+	ctx.drawImage(bubbleP,320-(pPulse/2),235-(pPulse/2),170+pPulse,175+pPulse);
+	ctx.drawImage(bubble,0,0,W,H);
+	ctx.drawImage(bubbleN,260-(nPulse/2),255-(nPulse/2),275+nPulse,150+nPulse);
+	ctx.drawImage(bubbleH,275-(hPulse/2),310,250+hPulse,30);
+	ctx.drawImage(bubbleB,420-(bPulse/2),420-(bPulse/2),95+bPulse,70+bPulse);
+	ctx.font = "20px Courier New";
+	ctx.fillStyle = "white";
+	//ctx.fillText(mouseX + ", " + mouseY,10,30);
+	if(pointRect(mouseX,mouseY,250,245,40,50)||pointRect(mouseX,mouseY,250,365,40,50)||pointRect(mouseX,mouseY,500,245,40,50)||pointRect(mouseX,mouseY,500,365,40,50))
+	{
+		dialogue = "";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Each end of a DNA molecule is identified with either 3'",30,40);
+		ctx.fillText("a 5' based on the number of carbons in the deoxyribose",30,62);
+		ctx.fillText("sugar. DNA strands run parallel to each other, but in",30,84);
+		ctx.fillText("opposite directions so they are 'antiparallel'.",30,106);
+		nPulse += pulseDirection;
+		if(nPulse >= 20)
+		{
+			pulseDirection = -1;
+		}
+		if(nPulse <= 0)
+		{
+			pulseDirection = 1;
+		}
+	}
+	else
+	{
+		nPulse = 0;
+	}
+	
+	if(pointRect(mouseX,mouseY,270,310,40,30)||pointRect(mouseX,mouseY,485,310,40,30))
+	{
+		dialogue = "";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Helicase breaks the hydrogen bonds between nucleosides",30,40);
+		ctx.fillText("and creates an origin of replication at the fork.",30,62);
+		hPulse += pulseDirection;
+		if(hPulse >= 20)
+		{
+			pulseDirection = -1;
+		}
+		if(hPulse <= 0)
+		{
+			pulseDirection = 1;
+		}
+	}
+	else
+	{
+		hPulse = 0;
+	}
+	
+	if(pointRect(mouseX,mouseY,315,235,85,75)||pointRect(mouseX,mouseY,410,340,80,70))
+	{
+		dialogue = "";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Polymerase III is an enzyme that synthesizes new strands",30,40);
+		ctx.fillText("of DNA. It moves along both the leading and lagging",30,62);
+		ctx.fillText("strands to add nucleotides. (click to learn more)",30,84);
+		pPulse += pulseDirection;
+		if(pPulse >= 20)
+		{
+			pulseDirection = -1;
+		}
+		if(pPulse <= 0)
+		{
+			pulseDirection = 1;
+		}
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			gameMode = "lead";
+			leadingStrand = new Array(26);
+			for(let i = 0; i < leadingStrand.length; i++){
+				leadingStrand[i] = new Array(2);
+				let r = Math.floor(Math.random()*4);
+				let base;
+				switch(r){
+					case 0:
+						base = "a";
+						break;
+					case 1:
+						base = "t";
+						break;
+					case 2:
+						base = "c";
+						break;
+					case 3:
+						base = "g";
+						break;
+			}
+			leadingStrand[i][0] = base;
+			leadingStrand[i][1] = 0;
+			}
+			xOffset = 0;
+			baseHeight = 100;
+			baseWidth = 40;
+			hotStartOffset = 300;
+			space = 100 + baseWidth;
+			currentBaseIndex = -1;
+			isHolding = false;
+			holding;
+			speed = 1;
+			polymeraseX = hotStartOffset + (space * 2) - xOffset-110;
+		}
+	}
+	else
+	{
+		pPulse = 0;
+	}
+	
+	if(pointRect(mouseX,mouseY,420,420,95,70))
+	{
+		dialogue = "";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Nucleotides form the basic structure of DNA. They consist",30,40);
+		ctx.fillText("of a nucleoside and a phosphate. (click to learn more)",30,62);
+		bPulse += pulseDirection;
+		if(bPulse >= 20)
+		{
+			pulseDirection = -1;
+		}
+		if(bPulse <= 0)
+		{
+			pulseDirection = 1;
+		}
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			currentBaseIndex = 0;
+			gameMode = "bases";
+		}
+	}
+	else
+	{
+		bPulse = 0;
+	}
+	
+	if(pointRect(mouseX,mouseY,0,250,170,130))
+	{
+		dialogue = "";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Replication bubbles are the site of DNA replication. As",30,40);
+		ctx.fillText("shown there can be multiple origins of replication on a",30,62);
+		ctx.fillText("single chromosome.",30,84);
+	}
+	
+	ctx.font = "22px Courier New";
+	ctx.fillStyle = "#414a30";
+	ctx.fillText(dialogue,30,40);
+	
+	if(wPressed)
+	{
+		wPressed = false;
+		gameMode = "lag";
+			laggingStrand = new Array(30);
+			for(let i = 0; i < laggingStrand.length; i++){
+				laggingStrand[i] = new Array(2);
+				let r = Math.floor(Math.random()*4);
+				let base;
+				switch(r){
+					case 0:
+						base = "a";
+						break;
+					case 1:
+						base = "t";
+						break;
+					case 2:
+						base = "c";
+						break;
+					case 3:
+						base = "g";
+						break;
+				}
+				laggingStrand[i][0] = base;
+				laggingStrand[i][1] = 0;
+			}
+			xOffset = 0;
+			baseHeight = 100;
+			baseWidth = 40;
+			hotStartOffset = 200;
+			space = 100 + baseWidth;
+			currentBaseIndex = "intro";
+			isHolding = false;
+			holding;
+			speed = 1;
+			polymeraseX = hotStartOffset + (space * 2) - xOffset-110;
+	}
+}
+
+function drawBases()
+{
+	if(currentBaseIndex==0)
+	{
+		ctx.drawImage(bonds,(W/2)-200,150,400,450);
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("The two sing ring nucleosides on the left are the",30,40);
+		ctx.fillText("pyrimidines Thymine and Cytosine. The double ring",30,62);
+		ctx.fillText("nucleosides on the rightare the purines Adenine and",30,84);
+		ctx.fillText("Guanine.",30,106);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			currentBaseIndex++;
+		}
+	}
+	if(currentBaseIndex==1)
+	{
+		ctx.drawImage(bonds2,0,150,W,450);
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("The phosphates in orange and deoxyribose sugars in",30,40);
+		ctx.fillText("black make up the 'backbone' of the DNA.",30,62);
+		ctx.fillText("bond",30,84);
+		ctx.fillText("",30,106);
+	}
+}
+
+let fps = 60;
+let frameOfSecond = 0;
+function iterate()
+{
+	frameOfSecond++;
+	if(frameOfSecond>fps){
+		frameOfSecond = 1;
+	}
+	ctx.clearRect(0,0,W,H);
+	ctx.drawImage(bckgrnd,0,0,W,H);
+	if(gameMode == "menu")
+	{
+		menu();
+	}
+	else if(gameMode == "lead")
+	{
+		drawLeadingStrand();
+	}
+	else if(gameMode == "lag")
+	{
+		drawLaggingStrand();
+	}
+	else if(gameMode == "bases")
+	{
+		drawBases();
+	}
+	if(escPressed)
+	{
+		gameMode = "menu";
+	}
+}
+
+setInterval(iterate, 1000/60);
+
+</script>
+</body>
+</html>
