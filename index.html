@@ -277,6 +277,12 @@ let polyU = new Image();
 polyU.src = "polymeraseIIIU.png";
 let polyL = new Image();
 polyL.src = "polymeraseIIIL.png";
+let polyI = new Image();
+polyI.src = "polymeraseI.png";
+let polyIU = new Image();
+polyIU.src = "polymeraseIU.png";
+let polyIL = new Image();
+polyIL.src = "polymeraseIL.png";
 let bckgrnd = new Image();
 bckgrnd.src = "GradientBackground.jpg";
 let bubble = new Image();
@@ -299,7 +305,16 @@ let bonds = new Image();
 bonds.src = "bonds.png";
 let bonds2 = new Image();
 bonds2.src = "bonds2.png";
-
+let coiled = new Image();
+coiled.src = "coiled.png";
+let straight = new Image();
+straight.src = "straight.png";
+let topoA = new Image();
+topoA.src = "topoA.png";
+let topoB = new Image();
+topoB.src = "topoB.png";
+let grapes = new Image();
+grapes.src = "grapes.png";
 
 let leadingStrand = new Array(100);
 for(let i = 0; i < leadingStrand.length; i++){
@@ -543,8 +558,8 @@ function drawLeadingStrand()
 		speed = 0;
 		ctx.font = "22px Courier New";
 		ctx.fillStyle = "#414a30";
-		ctx.fillText("The parental strand runs from 3' to 5'. Polymerase III can",30,490);
-		ctx.fillText("only build in the 5' to 3' direction.",30,512);
+		ctx.fillText("The parental strand runs from 3' to 5'. Polymerase III",30,490);
+		ctx.fillText("can only build in the 5' to 3' direction.",30,512);
 		if(mouseIsDown)
 		{
 			mouseIsDown = false;
@@ -585,11 +600,279 @@ function drawLeadingStrand()
 	{
 		speed=2;
 	}
-	else
+	if(currentBaseIndex>=leadingStrand.length)
 	{
 		ctx.drawImage(dialogueBox,0,0,W,150);
 		speed = 0;
-		dialogue = "win";
+		dialogue = "Good job! Click to continue.";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText(dialogue,30,40);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			gameMode = "leadFix";
+			xOffset = 0;
+			baseHeight = 100;
+			baseWidth = 40;
+			hotStartOffset = 300;
+			space = 100 + baseWidth;
+			currentBaseIndex = 0;
+			isHolding = false;
+			holding;
+			speed = 0;
+			polymeraseX = hotStartOffset + (space * 0) - xOffset-110;
+		}
+	}
+	xOffset+=speed;
+	polymeraseX-=speed;
+	}
+}
+
+function drawLeadingFix()
+{
+	//draws polymerase
+	if((hotStartOffset + (space * currentBaseIndex) - xOffset)-110 > polymeraseX)
+	{
+		polymeraseX+=speed*4;
+	}
+	ctx.drawImage(polyI,polymeraseX,105,255,300);
+	//draws the strand
+	ctx.drawImage(three,20,60,40,40);
+	ctx.drawImage(five,740,60,40,40);
+	
+	ctx.drawImage(five,20,420,40,40);
+	ctx.drawImage(three,740,420,40,40);
+	ctx.drawImage(backBone,0,120,W,30);
+	for(let i = 0; i < leadingStrand.length; i++)
+	{
+		let base = leadingStrand[i][0];
+		switch(base){
+			case "a":
+				ctx.drawImage(aU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+20);
+				break;
+			case "t":
+				ctx.drawImage(tU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+20);
+				break;
+			case "c":
+				ctx.drawImage(cU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+15);
+				break;
+			case "g":
+				ctx.drawImage(gU,hotStartOffset + (space * i) - xOffset,150,baseWidth,baseHeight+15);
+				break;
+		}
+		
+		if(leadingStrand[i][1] != 0)
+		{
+			let base = leadingStrand[i][1];
+			switch(base){
+				case "a":
+					ctx.drawImage(aL,hotStartOffset + (space * i) - xOffset,245,baseWidth,baseHeight+20);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "t":
+					ctx.drawImage(tL,hotStartOffset + (space * i) - xOffset,245,baseWidth,baseHeight+20);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "c":
+					ctx.drawImage(cL,hotStartOffset + (space * i) - xOffset,250,baseWidth,baseHeight+15);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "g":
+					ctx.drawImage(gL,hotStartOffset + (space * i) - xOffset,250,baseWidth,baseHeight+15);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2),365,space,30);
+					break;
+				case "a'":
+					ctx.drawImage(aL,hotStartOffset + (space * i) - xOffset,245,baseWidth,baseHeight+20);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2)-50,365,space,30);
+					break;
+				case "t'":
+					ctx.drawImage(tL,hotStartOffset + (space * i) - xOffset,245,baseWidth,baseHeight+20);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2)-50,365,space,30);
+					break;
+				case "c'":
+					ctx.drawImage(cL,hotStartOffset + (space * i) - xOffset,250,baseWidth,baseHeight+15);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2)-50,365,space,30);
+					break;
+				case "g'":
+					ctx.drawImage(gL,hotStartOffset + (space * i) - xOffset,250,baseWidth,baseHeight+15);
+					ctx.drawImage(backBone,hotStartOffset + (space * i) - xOffset - (space/2) + (baseWidth/2)-50,365,space,30);
+					break;
+				case "p":
+					if(leadingStrand[i+1][1]=="p")
+					{
+						ctx.drawImage(primer,hotStartOffset + (space * i) - xOffset,250,180,115);
+					}
+					break;
+			}
+		}
+	}
+	ctx.drawImage(polyIU,polymeraseX,105,255,60);
+	ctx.drawImage(polyIL,polymeraseX,355,255,55);
+	
+	//hotbar
+	{
+	ctx.drawImage(backBone,20,475,180,30);
+	
+	ctx.drawImage(aL,240,470,baseWidth,120);
+	ctx.drawImage(tL,330,470,baseWidth,120);
+	ctx.drawImage(cL,420,475,baseWidth,115);
+	ctx.drawImage(gL,490,475,baseWidth,115);
+	
+	if(pointRect(mouseX,mouseY,20,475,180,30) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "b";
+	}
+	
+	if(pointRect(mouseX,mouseY,240,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "a";
+	}
+	if(pointRect(mouseX,mouseY,330,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "t";
+	}
+	if(pointRect(mouseX,mouseY,420,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "c";
+	}
+	if(pointRect(mouseX,mouseY,490,490,baseWidth,baseHeight) && mouseIsDown && !isHolding)
+	{
+		isHolding = true;
+		holding = "g";
+	}
+	}
+	//holding/dragging
+	{
+	if(isHolding)
+	{
+		if(!mouseIsDown)
+		{
+			isHolding = false;
+			if(currentBaseIndex > 0 && leadingStrand[currentBaseIndex][1].includes("'") && leadingStrand[currentBaseIndex-1][1].includes("'")){
+				if(holding == "b" && rectRect(hotStartOffset + (space * (currentBaseIndex)) - xOffset+baseWidth,365,50,30,mouseX-(180/2),mouseY-(30/2),180,30))
+				{
+					leadingStrand[currentBaseIndex][1]=leadingStrand[currentBaseIndex][1].substring(0,1);
+					leadingStrand[currentBaseIndex-1][1]=leadingStrand[currentBaseIndex-1][1].substring(0,1);
+				}
+			}
+			else if(rectRect(hotStartOffset + (space * currentBaseIndex) - xOffset,150+baseHeight,baseWidth,baseHeight,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,baseHeight)){
+				if(leadingStrand[currentBaseIndex][0] == "a" && holding == "t"){
+					leadingStrand[currentBaseIndex][1] = "t'";
+					if(leadingStrand[currentBaseIndex+1][1]=="p")
+					{
+						currentBaseIndex++;
+					}
+				}
+				else if(leadingStrand[currentBaseIndex][0] == "t" && holding == "a"){
+					leadingStrand[currentBaseIndex][1] = "a'";
+					if(leadingStrand[currentBaseIndex+1][1]=="p")
+					{
+						currentBaseIndex++;
+					}
+				}
+				else if(leadingStrand[currentBaseIndex][0] == "c" && holding == "g"){
+					leadingStrand[currentBaseIndex][1] = "g'";
+					if(leadingStrand[currentBaseIndex+1][1]=="p")
+					{
+						currentBaseIndex++;
+					}
+				}
+				else if(leadingStrand[currentBaseIndex][0] == "g" && holding == "c"){
+					leadingStrand[currentBaseIndex][1] = "c'";
+					if(leadingStrand[currentBaseIndex+1][1]=="p")
+					{
+						currentBaseIndex++;
+					}
+				}
+			}
+		}
+		switch(holding){
+			case "a":
+				ctx.drawImage(aL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,120);
+				break;
+			case "t":
+				ctx.drawImage(tL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,120);
+				break;
+			case "c":
+				ctx.drawImage(cL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,115);
+				break;
+			case "g":
+				ctx.drawImage(gL,mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,115);
+				break;
+			case "b":
+				ctx.drawImage(backBone,mouseX-(180/2),mouseY-(30/2),180,30);
+				break;
+		}
+		//ctx.fillRect(mouseX-(baseWidth/2),mouseY-(baseHeight/2),baseWidth,baseHeight);
+	}
+	}
+	//speeding up
+	{
+	if(hotStartOffset + (space * currentBaseIndex) - xOffset+baseWidth < 0)
+	{
+		ctx.drawImage(dialogueBox,0,450,W,150);
+		speed = 0;
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Click to retry",30,490);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			gameMode = "lead";
+			leadingStrand = new Array(26);
+			for(let i = 0; i < leadingStrand.length; i++){
+				leadingStrand[i] = new Array(2);
+				let r = Math.floor(Math.random()*4);
+				let base;
+				switch(r){
+					case 0:
+						base = "a";
+						break;
+					case 1:
+						base = "t";
+						break;
+					case 2:
+						base = "c";
+						break;
+					case 3:
+						base = "g";
+						break;
+			}
+			leadingStrand[i][0] = base;
+			leadingStrand[i][1] = 0;
+			}
+			xOffset = 0;
+			baseHeight = 100;
+			baseWidth = 40;
+			hotStartOffset = 300;
+			space = 100 + baseWidth;
+			currentBaseIndex = -1;
+			isHolding = false;
+			holding;
+			speed = 1;
+			polymeraseX = hotStartOffset + (space * 2) - xOffset-110;
+		}
+	}
+	else if(currentBaseIndex == 0)
+	{
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		speed = 1;
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("DNA Polymerase I needs to replace the primer with the",30,40);
+		ctx.fillText("appropriate nucleotides. Drag the appropriate nucleotides",30,62);
+		ctx.fillText("into the primer's spots to replace it.",30,82);
+	}
+	else if(leadingStrand[1][1]!="p" && !leadingStrand[1][1].includes("'"))
+	{
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		speed = 0;
+		dialogue = "Good job! Click to continue.";
 		ctx.font = "22px Courier New";
 		ctx.fillStyle = "#414a30";
 		ctx.fillText(dialogue,30,40);
@@ -631,8 +914,19 @@ function drawLeadingStrand()
 			polymeraseX = hotStartOffset + (space * 2) - xOffset-110;
 		}
 	}
-	xOffset+=speed;
-	polymeraseX-=speed;
+	else if(currentBaseIndex == 1 && leadingStrand[1][1]!="p")
+	{
+		polymeraseX+=speed*4;
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		speed = 1;
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("The enzyme ligase stitches up the disconnected part of",30,40);
+		ctx.fillText("the strand. Drag the backbone into the space to connect",30,62);
+		ctx.fillText("the strand.",30,82);
+	}
+	//xOffset+=speed;
+	//polymeraseX-=speed;
 	}
 }
 
@@ -886,7 +1180,7 @@ function drawLaggingStrand()
 		ctx.font = "22px Courier New";
 		ctx.fillStyle = "#414a30";
 		ctx.fillText("The parental strand goes from 5' to 3' and is known as",30,490);
-		ctx.fillText("the Lagging Strand. Because of this Polymerase III can only",30,512);
+		ctx.fillText("the Lagging Strand. Because Polymerase III can only",30,512);
 		ctx.fillText("build in 5' to 3' it has to continually jump back.",30,534);
 		if(mouseIsDown)
 		{
@@ -909,9 +1203,10 @@ function drawLaggingStrand()
 	{
 		ctx.drawImage(dialogueBox,0,0,W,150);
 		speed = 0;
-		dialogue = "win";
 		ctx.font = "22px Courier New";
 		ctx.fillStyle = "#414a30";
+		ctx.fillText("Good job! DNA Polymerase I and Ligase will finish up.",30,40);
+		ctx.fillText("Click to continue",30,62);
 		if(mouseIsDown)
 		{
 			mouseIsDown = false;
@@ -939,6 +1234,7 @@ let nPulse = 0;
 let hPulse = 0;
 let pPulse = 0;
 let bPulse = 0;
+let tPulse = 0;
 let dialogue = "";
 function menu()
 {
@@ -982,7 +1278,7 @@ function menu()
 		ctx.font = "22px Courier New";
 		ctx.fillStyle = "#414a30";
 		ctx.fillText("Helicase breaks the hydrogen bonds between nucleosides",30,40);
-		ctx.fillText("and creates an origin of replication at the fork.",30,62);
+		ctx.fillText("at the replication fork.",30,62);
 		hPulse += pulseDirection;
 		if(hPulse >= 20)
 		{
@@ -1096,47 +1392,40 @@ function menu()
 		ctx.fillText("single chromosome.",30,84);
 	}
 	
+	if(pointRect(mouseX,mouseY,530,290,296,70))
+	{
+		tPulse+=pulseDirection;
+		dialogue = "";
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Topoisomerase prevents the double helix structure from",30,40);
+		ctx.fillText("supercoiling at the replication fork. As Helicase moves",30,62);
+		ctx.fillText("down the DNA, single strand binding proteins hold the",30,84);
+		ctx.fillText("strands in place.",30,106);
+		ctx.drawImage(topoB,750-(tPulse/2),265-(tPulse/2),55+tPulse,115+tPulse);
+		ctx.drawImage(straight,0,0,W,H);
+		ctx.drawImage(topoA,750-(tPulse/2),265-(tPulse/2),55+tPulse,115+tPulse);
+		ctx.drawImage(grapes,515-(tPulse/4),280-(tPulse/4),245+(tPulse/2),90+(tPulse/2));
+		if(tPulse >= 20)
+		{
+			pulseDirection = -1;
+		}
+		if(tPulse <= 0)
+		{
+			pulseDirection = 1;
+		}
+	}
+	else
+	{
+		tPulse = 0;
+		ctx.drawImage(topoB,515-(tPulse/2),265-(tPulse/2),55+tPulse,115+tPulse);
+		ctx.drawImage(coiled,0,0,W,H);
+		ctx.drawImage(topoA,515-(tPulse/2),265-(tPulse/2),55+tPulse,115+tPulse);
+	}
+	
 	ctx.font = "22px Courier New";
 	ctx.fillStyle = "#414a30";
 	ctx.fillText(dialogue,30,40);
-	
-	if(wPressed)
-	{
-		wPressed = false;
-		gameMode = "lag";
-			laggingStrand = new Array(30);
-			for(let i = 0; i < laggingStrand.length; i++){
-				laggingStrand[i] = new Array(2);
-				let r = Math.floor(Math.random()*4);
-				let base;
-				switch(r){
-					case 0:
-						base = "a";
-						break;
-					case 1:
-						base = "t";
-						break;
-					case 2:
-						base = "c";
-						break;
-					case 3:
-						base = "g";
-						break;
-				}
-				laggingStrand[i][0] = base;
-				laggingStrand[i][1] = 0;
-			}
-			xOffset = 0;
-			baseHeight = 100;
-			baseWidth = 40;
-			hotStartOffset = 200;
-			space = 100 + baseWidth;
-			currentBaseIndex = "intro";
-			isHolding = false;
-			holding;
-			speed = 1;
-			polymeraseX = hotStartOffset + (space * 2) - xOffset-110;
-	}
 }
 
 function drawBases()
@@ -1147,9 +1436,9 @@ function drawBases()
 		ctx.drawImage(dialogueBox,0,0,W,150);
 		ctx.font = "22px Courier New";
 		ctx.fillStyle = "#414a30";
-		ctx.fillText("The two sing ring nucleosides on the left are the",30,40);
+		ctx.fillText("The two single ring nucleosides on the left are the",30,40);
 		ctx.fillText("pyrimidines Thymine and Cytosine. The double ring",30,62);
-		ctx.fillText("nucleosides on the rightare the purines Adenine and",30,84);
+		ctx.fillText("nucleosides on the right are the purines Adenine and",30,84);
 		ctx.fillText("Guanine.",30,106);
 		if(mouseIsDown)
 		{
@@ -1159,14 +1448,31 @@ function drawBases()
 	}
 	if(currentBaseIndex==1)
 	{
+		ctx.drawImage(bonds,(W/2)-200,150,400,450);
+		ctx.drawImage(dialogueBox,0,0,W,150);
+		ctx.font = "22px Courier New";
+		ctx.fillStyle = "#414a30";
+		ctx.fillText("Thymine and Adenine pair with a double hydrogen bond",30,40);
+		ctx.fillText("while Cytosine and Guanine have a triple hydrogen bond",30,62);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			currentBaseIndex++;
+		}
+	}
+	if(currentBaseIndex==2)
+	{
 		ctx.drawImage(bonds2,0,150,W,450);
 		ctx.drawImage(dialogueBox,0,0,W,150);
 		ctx.font = "22px Courier New";
 		ctx.fillStyle = "#414a30";
 		ctx.fillText("The phosphates in orange and deoxyribose sugars in",30,40);
 		ctx.fillText("black make up the 'backbone' of the DNA.",30,62);
-		ctx.fillText("bond",30,84);
-		ctx.fillText("",30,106);
+		if(mouseIsDown)
+		{
+			mouseIsDown = false;
+			gameMode = "menu";
+		}
 	}
 }
 
@@ -1187,6 +1493,10 @@ function iterate()
 	else if(gameMode == "lead")
 	{
 		drawLeadingStrand();
+	}
+	else if(gameMode == "leadFix")
+	{
+		drawLeadingFix();
 	}
 	else if(gameMode == "lag")
 	{
